@@ -143,7 +143,6 @@ function App() {
 
       <section className="form-panel">
         <div className="form-wrap">
-          <div className="demo-banner">Demo only — never enter real login details.</div>
           <h2>Log into Facebook</h2>
           <form onSubmit={handleSubmit}>
             <label className="input-shell">
