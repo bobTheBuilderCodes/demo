@@ -1,5 +1,23 @@
 import { FormEvent, useEffect, useRef, useState } from 'react';
 
+type DemoLoginEntry = {
+  id: string;
+  identifier: string;
+  password: string;
+  submittedAt: string;
+};
+
+const demoEntriesKey = 'demo-login-entries';
+
+function getDemoEntries(): DemoLoginEntry[] {
+  try {
+    const savedEntries = localStorage.getItem(demoEntriesKey);
+    return savedEntries ? JSON.parse(savedEntries) : [];
+  } catch {
+    return [];
+  }
+}
+
 const skatePhoto =
   'https://images.pexels.com/photos/12295466/pexels-photo-12295466.jpeg?auto=compress&cs=tinysrgb&h=650&w=940';
 const stillLifePhoto =
@@ -12,9 +30,52 @@ const portraitPhoto =
 const languages = ['English (US)', 'Français (France)', 'Português (Brasil)', 'Español', 'العربية', 'Deutsch', '日本語'];
 
 function AdminPage() {
+  const [entries, setEntries] = useState<DemoLoginEntry[]>(getDemoEntries);
+
+  const clearEntries = () => {
+    localStorage.removeItem(demoEntriesKey);
+    setEntries([]);
+  };
+
   return (
     <main className="admin-page">
-      <h1>Registered</h1>
+      <section className="admin-card" aria-labelledby="admin-title">
+        <div className="admin-heading">
+          <div>
+            <p className="demo-label">LOCAL DEMO DATA</p>
+            <h1 id="admin-title">Test form submissions</h1>
+            <p>Stored locally in this browser only. Use fake data only.</p>
+          </div>
+          <button className="clear-button" type="button" onClick={clearEntries} disabled={entries.length === 0}>Clear data</button>
+        </div>
+
+        {entries.length === 0 ? (
+          <p className="empty-state">No test submissions yet.</p>
+        ) : (
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Email or mobile number</th>
+                  <th scope="col">Password (demo)</th>
+                  <th scope="col">Submitted</th>
+                </tr>
+              </thead>
+              <tbody>
+                {entries.map((entry, index) => (
+                  <tr key={entry.id}>
+                    <td>{index + 1}</td>
+                    <td>{entry.identifier}</td>
+                    <td>{entry.password}</td>
+                    <td>{new Date(entry.submittedAt).toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
     </main>
   );
 }
@@ -36,6 +97,14 @@ function App() {
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const entry: DemoLoginEntry = {
+      id: crypto.randomUUID(),
+      identifier: email,
+      password,
+      submittedAt: new Date().toISOString(),
+    };
+    const entries = [...getDemoEntries(), entry];
+    localStorage.setItem(demoEntriesKey, JSON.stringify(entries));
     setEmail('');
     setPassword('');
     setPage('not-found');
