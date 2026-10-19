@@ -11,6 +11,14 @@ const portraitPhoto =
 
 const languages = ['English (US)', 'Français (France)', 'Português (Brasil)', 'Español', 'العربية', 'Deutsch', '日本語'];
 
+function AdminPage() {
+  return (
+    <main className="admin-page">
+      <h1>Registered</h1>
+    </main>
+  );
+}
+
 function App() {
   const emailRef = useRef<HTMLInputElement>(null);
   const [email, setEmail] = useState('');
@@ -21,6 +29,10 @@ function App() {
   useEffect(() => {
     emailRef.current?.focus();
   }, []);
+
+  if (window.location.pathname === '/admin') {
+    return <AdminPage />;
+  }
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
